@@ -73,12 +73,35 @@ QuickWrap class >> doQuickWrapWithCompileHandler: method [
 ]
 
 { #category : #'as yet unclassified' }
+QuickWrap class >> doSuperCacheCompileHandler: method [
+
+	"Called when a method is compiled, right after adding it to the method dictionary of the class"
+
+	| pragma selector |
+	Transcript show: 'Generating superCache for: ' , method selector.
+	pragma := method pragmaAt: #superCached.
+	pragma ifNil: [ ^ method ].
+	selector := method selector.
+
+	"preventing infinite loops"
+	(self currentlyWrapping anySatisfy: [ :each | 
+		 each methodClass == method methodClass and: [ 
+			 each selector == selector ] ]) ifTrue: [ ^ method ].
+	[ 
+	self currentlyWrapping add: method.
+
+	SuperCache generateSuperCacheFor: method ] ensure: [ 
+		self currentlyWrapping remove: method ]
+]
+
+{ #category : #'as yet unclassified' }
 QuickWrap class >> executeMethodCompiledHandlersFor: method [
 
 	"Called when a method is compiled, right after adding it to the method dictionary of the class"
 
 	self doQuickWrapWithCompileHandler: method.
-	self doAutoCacheCompileHandler: method
+	self doAutoCacheCompileHandler: method.
+	self doSuperCacheCompileHandler: method
 ]
 
 { #category : #'as yet unclassified' }
