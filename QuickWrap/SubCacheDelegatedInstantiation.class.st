@@ -47,7 +47,18 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegations [
 
 	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
 
+	self refreshAllMethodsDelegationsForDelegates.
+	"Originals go after, to avoid doing them twice"
+	self refreshAllMethodsDelegationsForOriginals
+]
+
+{ #category : #'as yet unclassified' }
+SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForDelegates [
+
+	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
+
 	| pragmas |
+	
 	pragmas := (Pragma allNamed: #delegateMethodProxyTarget) select: [ :p | 
 		           p method methodClass isObsolete not and: [ 
 			           p method methodClass soleInstance isSubCache ] ].
@@ -58,6 +69,23 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegations [
 		targetMethod := (pClass class >> selector) unproxifiedMethod.
 		sourceCode := targetMethod sourceCode.
 		pClass class compile: sourceCode ]
+]
+
+{ #category : #'as yet unclassified' }
+SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForOriginals [
+
+	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
+
+	| pragmas |
+	pragmas := (Pragma allNamed: self handledPragma) select: [ :p | 
+		           p method methodClass isObsolete not ].
+	pragmas do: [ :each | 
+		| selector pClass targetMethod sourceCode |
+		selector := each method selector.
+		pClass := each method methodClass.
+		targetMethod := (pClass class >> selector) unproxifiedMethod.
+		sourceCode := targetMethod sourceCode.
+		pClass class compileSecretly: sourceCode ]
 ]
 
 { #category : #'as yet unclassified' }
