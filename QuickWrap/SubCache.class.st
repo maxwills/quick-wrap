@@ -12,14 +12,14 @@ Class {
 { #category : #'as yet unclassified' }
 SubCache class >> addSubCacheBaseSlotsAndMethods: subCacheClass [
 
-	subCacheClass addSlot: #_cacheTimeKey => InstanceVariableSlot.
-	subCacheClass compile: 'updateCacheTimeKey
+	subCacheClass addSlotSecretly: #_cacheTimeKey => InstanceVariableSlot.
+	subCacheClass compileSecretly: 'updateCacheTimeKey
 	_cacheTimeKey := yourexpression toUpdateTheTimekey"Example: myInstanceVariable  (or self aMethod)" "DONT USE CACHED METHODS of self. You can use super methods"'.
-	subCacheClass compile: 'resetCacheTimeKey
+	subCacheClass compileSecretly: 'resetCacheTimeKey
 	self class slots do: [ :s | s write: nil to: self ]'.
-	subCacheClass compile: 'cacheTimeKey: anObject
+	subCacheClass compileSecretly: 'cacheTimeKey: anObject
 	_cacheTimeKey := anObject'.
-	subCacheClass class compile: 'isSubCache
+	subCacheClass class compileSecretly: 'isSubCache
 	^true'
 ]
 

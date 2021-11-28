@@ -1,6 +1,13 @@
 Extension { #name : #ClassDescription }
 
 { #category : #'*QuickWrap' }
+ClassDescription >> addSlotSecretly: aSlot [
+
+	SystemAnnouncer uniqueInstance suspendAllWhile: [ 
+		^ self addSlot: aSlot ]
+]
+
+{ #category : #'*QuickWrap' }
 ClassDescription >> compileSecretly: code [
 
 	"Compile the code without leaving any trace."
