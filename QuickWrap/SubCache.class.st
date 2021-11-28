@@ -12,9 +12,14 @@ Class {
 { #category : #'as yet unclassified' }
 SubCache class >> addSubCacheBaseSlotsAndMethods: subCacheClass [
 
+	| updateMethod |
 	subCacheClass addSlotSecretly: #_cacheTimeKey => InstanceVariableSlot.
-	subCacheClass compileSecretly: 'updateCacheTimeKey
-	_cacheTimeKey := yourexpression toUpdateTheTimekey"Example: myInstanceVariable  (or self aMethod)" "DONT USE CACHED METHODS of self. You can use super methods"'.
+	updateMethod := subCacheClass methodDictionary
+		                at: #updateCacheTimeKey
+		                ifAbsent: [ nil ].
+	updateMethod ifNil: [ 
+		subCacheClass compileSecretly: 'updateCacheTimeKey
+	_cacheTimeKey := yourexpression toUpdateTheTimekey"Example: myInstanceVariable  (or self aMethod)" "DONT USE CACHED METHODS of self. You can use super methods"' ].
 	subCacheClass compileSecretly: 'resetCacheTimeKey
 	self class slots do: [ :s | s write: nil to: self ]'.
 	subCacheClass compileSecretly: 'cacheTimeKey: anObject
