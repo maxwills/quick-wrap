@@ -59,7 +59,7 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegations [
 		| selector pClass targetMethod sourceCode |
 		selector := each method selector.
 		pClass := each method methodClass soleInstance superclass.
-		targetMethod := (pClass >> selector) unproxifiedMethod.
+		targetMethod := (pClass class >> selector) unproxifiedMethod.
 		sourceCode := targetMethod sourceCode.
 		pClass class compile: sourceCode ]
 ]
