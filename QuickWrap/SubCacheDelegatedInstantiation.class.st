@@ -17,7 +17,7 @@ SubCacheDelegatedInstantiation class >> handleCompiledMethod: aMethod [
 	subCacheClass ifNil: [ 
 		^ self error: 'A SubCache is required to install delegation proxies' ].
 	"Copy the method to the deletage"
-	subCacheClass compile: (aMethod sourceCode
+	subCacheClass class compile: (aMethod sourceCode
 			 copyReplaceAll: self handledPragma
 			 with: 'delegateMethodProxyTarget'). "prevent recursion"
 	"Install the delegation proxy. This will make the base class to execute the subclass' method instead (Ignoring its own method)" 
