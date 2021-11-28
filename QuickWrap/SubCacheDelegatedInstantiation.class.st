@@ -82,9 +82,9 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForOriginals
 		| selector pClass targetMethod sourceCode |
 		selector := each method selector.
 		pClass := each method methodClass.
-		targetMethod := (pClass class >> selector) unproxifiedMethod.
+		targetMethod := (pClass >> selector) unproxifiedMethod.
 		sourceCode := targetMethod sourceCode.
-		pClass class compileSecretly: sourceCode ]
+		pClass compileSecretly: sourceCode ]
 ]
 
 { #category : #'as yet unclassified' }
