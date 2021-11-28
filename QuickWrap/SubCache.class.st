@@ -73,7 +73,7 @@ SubCache class >> cleanUpAllSlotsAndMethodsOf: subCacheClass [
 		subCacheClass methodDictionary removeAll.
 		subCacheClass class methodDictionary removeAll.
 		updateMethodSource ifNotNil: [ 
-			subCacheClass compile: updateMethodSource ] ]
+			subCacheClass compileSecretly: updateMethodSource ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -113,10 +113,11 @@ SubCache class >> generateSubCacheFor: aMethod [
 		              with: selector.
 	(targetClass slots anySatisfy: [ :s | 
 		 s name == (#__cached_ , selector) ]) ifFalse: [ 
-		targetClass addSlot: #__cached_ , selector => InstanceVariableSlot.
-		targetClass addSlot:
+		targetClass addSlotSecretly:
+			#__cached_ , selector => InstanceVariableSlot.
+		targetClass addSlotSecretly:
 			#__cached_ , selector , #TimeKey => InstanceVariableSlot ].
-	targetClass compile: sourceCode
+	targetClass compileSecretly: sourceCode
 ]
 
 { #category : #'as yet unclassified' }
@@ -171,6 +172,7 @@ SubCache class >> removeAllSlotsAndMethodsOf: subCacheClass [
 SubCache class >> removeSubCacheForClass: aClass [
 
 	| subCacheClass methodsToRestore |
+	self error: 'Dont call this'.
 	subCacheClass := self subCacheClassFor: aClass.
 	subCacheClass ifNil: [ ^ self ].
 	methodsToRestore := aClass class methodDictionary values select: [ :m | 

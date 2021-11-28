@@ -32,6 +32,10 @@ For explanations on how to use each proxy, see each class comments.
 The class side contains all the methods that the system uses.
 In instance side contains method templates. They are not used directly, but instead, their source code is used to compile other methods necessary to the system.
 
+## Others:
+Might use noteCompilationOf: aSelector meta: isMeta
+	""A hook allowing some classes to react to recompilation of certain selectors in the future.
+
 "
 Class {
 	#name : #QuickWrap,
@@ -120,7 +124,7 @@ QuickWrap class >> installQuickWrapSystem [
 	| originalMethod originalCompileSource |
 	#Uninstall_it_first.
 	self uninstallQuickWrapSystem.
-	#Install_it_now. 
+	#Install_it_now.
 	originalMethod := Behavior methodDictionary at:
 		                  #addSelectorSilently:withMethod:.
 	originalCompileSource := 'original_' , originalMethod sourceCode trim.
@@ -128,7 +132,38 @@ QuickWrap class >> installQuickWrapSystem [
 	Behavior compile:
 		(self methodDictionary at: #addSelectorSilently:withMethod:)
 			sourceCode.
-	#Its_installed_now
+	#Its_installed_now.
+	self patchIceRepository.
+	#additionally_patching_IceRepositoty
+]
+
+{ #category : #'as yet unclassified' }
+QuickWrap class >> patchIceRepository [
+
+	"Fixes a bug related to browsing a method that was compiled secretly"
+
+	| method originalSourceCode newSourceCode |
+	method := IceRepository class>> #registeredRepositoryIncludingPackage:.
+	method ifNil: [ ^ self "we are in trouble" ].
+	originalSourceCode := method sourceCode.
+
+	newSourceCode := originalSourceCode
+		                 copyReplaceAll: 'aPackage ifNil: [ ^ nil ].
+'
+		                 with: ''.
+	newSourceCode := newSourceCode
+		                 copyReplaceAll: '^ self registry'
+		                 with: 'aPackage ifNil: [ ^ nil ].
+	^ self registry'.
+	IceRepository class compile: newSourceCode
+
+	"Should look something like this:"
+	"registeredRepositoryIncludingPackage: aPackage
+
+	aPackage ifNil: [ ^ nil ].
+	^ self registry
+		  detect: [ :each | each includesPackageNamed: aPackage name ]
+		  ifNone: [ nil ]"
 ]
 
 { #category : #enumerating }
@@ -143,14 +178,14 @@ QuickWrap class >> secretlyDo: aBlock [
 QuickWrap class >> uninstallQuickWrapSystem [
 
 	| originalMethod originalCompileSource |
-	(Behavior methodDictionary includes:
+	(Behavior methodDictionary includesKey:
 		 #original_addSelectorSilently:withMethod:) ifFalse: [ ^ self ].
 	originalMethod := Behavior methodDictionary at:
 		                  #original_addSelectorSilently:withMethod:.
 	originalCompileSource := originalMethod sourceCode trim 
 		                         withoutPrefix: #original_.
-	OpalCompiler compile: originalCompileSource.
-	OpalCompiler removeSelectorSilently:
+	Behavior compile: originalCompileSource.
+	Behavior removeSelectorSilently:
 		#original_addSelectorSilently:withMethod:
 ]
 
