@@ -77,8 +77,7 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForOriginals
 	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
 
 	| pragmas |
-	pragmas := (Pragma allNamed: self handledPragma) select: [ :p | 
-		           p method methodClass isObsolete not ].
+	pragmas := (Pragma allNamed: self handledPragma).
 	pragmas do: [ :each | 
 		| selector pClass targetMethod sourceCode |
 		selector := each method selector.
