@@ -11,9 +11,17 @@ SubCacheDelegatedInstantiation class >> handleCompiledMethod: aMethod [
 
 	"This installs the instantiation methods proxies, which are delegated to the SubCached class. The methods will keep the same name."
 
+	"In current version this only works for class methods"
+
 	| proxy subCacheClass |
-	subCacheClass := self subCacheClassFor:
-		                 aMethod methodClass soleInstance.
+	(SubCache classHasSubCache: aMethod methodClass soleInstance)
+		ifFalse: [ 
+			subCacheClass := SubCache createSubCacheClassFor:
+				                 aMethod methodClass soleInstance.
+			SubCache addSubCacheBaseSlotsAndMethods: subCacheClass ]
+		ifTrue: [ 
+			subCacheClass := self subCacheClassFor:
+				                 aMethod methodClass soleInstance ].
 	subCacheClass ifNil: [ 
 		^ self error: 'A SubCache is required to install delegation proxies' ].
 	"Copy the method to the deletage"
@@ -32,6 +40,28 @@ SubCacheDelegatedInstantiation class >> handleCompiledMethod: aMethod [
 SubCacheDelegatedInstantiation class >> handledPragma [
 
 	^ #subCacheDelegated
+]
+
+{ #category : #'as yet unclassified' }
+SubCacheDelegatedInstantiation class >> refeshMethodDelegationFor: anObject [
+]
+
+{ #category : #'as yet unclassified' }
+SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegations [
+
+	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
+
+	| pragmas |
+	pragmas := (Pragma allNamed: #delegateMethodProxyTarget) select: [ :p | 
+		           p method methodClass isObsolete not and: [ 
+			           p method methodClass soleInstance isSubCache ] ].
+	pragmas do: [ :each | 
+		| selector pClass targetMethod sourceCode |
+		selector := each method selector.
+		pClass := each method methodClass soleInstance superclass.
+		targetMethod := (pClass >> selector) unproxifiedMethod.
+		sourceCode := targetMethod sourceCode.
+		pClass class compile: sourceCode ]
 ]
 
 { #category : #'as yet unclassified' }
