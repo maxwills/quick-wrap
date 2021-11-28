@@ -49,7 +49,7 @@ SubCache class >> classHasSubCache: aClass [
 { #category : #'as yet unclassified' }
 SubCache class >> classIsSubCache: aClass [
 
-	^ (aClass methodDictionary includesKey: #isSubCache "preventing lookups")
+	^ (aClass class methodDictionary includesKey: #isSubCache "preventing lookups")
 		  ifTrue: [ aClass isSubCache ]
 		  ifFalse: [ false ]
 ]
@@ -85,7 +85,7 @@ SubCache class >> createSubCacheClassFor: aClass [
 	subCacheName := 'SubCached' , aClass name.
 	subCacheClass := self environment at: subCacheName ifAbsent: [ nil ].
 	subCacheClass ifNotNil: [ 
-		self removeAllSlotsAndMethodsOf: subCacheClass.
+		self cleanUpAllSlotsAndMethodsOf: subCacheClass.
 		^ subCacheClass ].
 
 	"Dont do this secretly"
@@ -127,7 +127,9 @@ SubCache class >> handleCompiledMethod: aMethod [
 	| selector |
 	selector := aMethod selector.
 	(self classHasSubCache: aMethod methodClass) ifFalse: [ 
-		self generateSubCacheFor: aMethod methodClass ].
+		| subCacheClass |
+		subCacheClass := self createSubCacheClassFor: aMethod methodClass.
+		self addSubCacheBaseSlotsAndMethods: subCacheClass ].
 
 	self generateSubCacheFor: aMethod
 ]
