@@ -43,10 +43,6 @@ SubCacheDelegatedInstantiation class >> handledPragma [
 ]
 
 { #category : #'as yet unclassified' }
-SubCacheDelegatedInstantiation class >> refeshMethodDelegationFor: anObject [
-]
-
-{ #category : #'as yet unclassified' }
 SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegations [
 
 	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
