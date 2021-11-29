@@ -18,7 +18,8 @@ SubCache class >> addSubCacheBaseSlotsAndMethods: subCacheClass [
 		                at: #updateCacheTimeKey
 		                ifAbsent: [ nil ].
 	updateMethod ifNil: [ 
-		subCacheClass compileSecretly: 'updateCacheTimeKey
+		"#updateCacheTime compiled not silently on purpose (so it can be modified and registered in the repository without problems"
+		subCacheClass compile: 'updateCacheTimeKey
 	_cacheTimeKey := yourexpression toUpdateTheTimekey"Example: myInstanceVariable  (or self aMethod)" "DONT USE CACHED METHODS of self. You can use super methods"' ].
 	subCacheClass compileSecretly: 'resetCacheTimeKey
 	self class slots do: [ :s | s write: nil to: self ]'.
