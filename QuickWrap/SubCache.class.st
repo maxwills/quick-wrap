@@ -155,12 +155,13 @@ SubCache class >> refreshAllMethodsCaches [
 	| pragmas |
 	pragmas := (Pragma allNamed: self handledPragma) select: [ :p | 
 		           p method methodClass isObsolete not ].
-	pragmas do: [ :each | 
-		| pClass targetMethod sourceCode |
-		pClass := each method methodClass.
-		targetMethod := each method.
-		sourceCode := targetMethod sourceCode.
-		pClass compileSecretly: sourceCode ]
+	EpMonitor disableDuring: [ 
+		pragmas do: [ :each | 
+			| pClass targetMethod sourceCode |
+			pClass := each method methodClass.
+			targetMethod := each method.
+			sourceCode := targetMethod sourceCode.
+			pClass compile: sourceCode ] ]
 ]
 
 { #category : #'as yet unclassified' }
