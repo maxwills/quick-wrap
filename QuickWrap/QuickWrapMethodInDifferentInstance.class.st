@@ -1,3 +1,6 @@
+"
+Lazily evaluates the expresion of the handlers.
+"
 Class {
 	#name : #QuickWrapMethodInDifferentInstance,
 	#superclass : #QwPostCompilationHandler,
@@ -8,21 +11,23 @@ Class {
 QuickWrapMethodInDifferentInstance class >> handleCompiledMethod: aMethod [
 
 	"This is called by the quickWrap system if the method pragmas contains the prama of this class"
-	| proxy wrapperMethod pragma|
-	
-	pragma := (aMethod pragmas select:[:p| p selector = self handledPragma ]) first.
-	
-	wrapperMethod := pragma.
 
-	proxy := QuickWrapMethodProxy 
+	| proxy pragma wrapperClassName wrapperSelector |
+	pragma := (aMethod pragmas select: [ :p | 
+		           p selector = self handledPragma ]) first.
+
+	wrapperClassName := pragma arguments first.
+	wrapperSelector := pragma arguments second.
+
+	proxy := QuickWrapMethodProxy
 		         onMethod: aMethod
-		         delegateHandler: wrapperMethod methodClass
-		         selector: wrapperMethod selector.
+		         delegateHandler: [ self class environment at: wrapperClassName ]
+		         selector: wrapperSelector.
 	proxy install
 ]
 
 { #category : #'as yet unclassified' }
 QuickWrapMethodInDifferentInstance class >> handledPragma [
 
-	^ #quickWrapWith:
+	^ #quickWrapBy:selector:
 ]

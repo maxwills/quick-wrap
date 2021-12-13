@@ -25,5 +25,5 @@ QuickWrapMethodInSameInstance class >> handleCompiledMethod: aMethod [
 { #category : #'as yet unclassified' }
 QuickWrapMethodInSameInstance class >> handledPragma [
  
-	^ #quickWrapWithSelector:
+	^ #quickWrapWith:
 ]

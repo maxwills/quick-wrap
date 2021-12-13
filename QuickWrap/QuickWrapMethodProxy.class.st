@@ -216,7 +216,7 @@ QuickWrapMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver [
 	(isDisabled or: [ "Check explicitly that the flag has been set.
 		This allows proxies to work independently of initialization side effects." 
 		 IsActiveInExecutionStack == true ]) ifTrue: [ 
-		^ delegateReceiver perform: handlerSelector withArguments: { 
+		^ delegateReceiver value perform: handlerSelector withArguments: { 
 				  aReceiver.
 				  proxifiedMethod.
 				  anArrayOfObjects } ].
@@ -298,7 +298,7 @@ QuickWrapMethodProxy >> valueWithReceiver: receiver arguments: arguments [
 	Otherwise the non-local return logic would be instrumented and this could end in infinite loops"
 	[ 
 	IsActiveInExecutionStack := false.
-	result := delegateReceiver
+	result := delegateReceiver value
 		          perform: handlerSelector
 		          withArguments: { 
 				          receiver.
