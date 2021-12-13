@@ -56,47 +56,6 @@ QuickWrap class >> currentlyWrapping [
 ]
 
 { #category : #'as yet unclassified' }
-QuickWrap class >> doAutoCacheCompileHandler: method [
-
-	"Called when a method is compiled, right after adding it to the method dictionary of the class"
-
-	| pragma selector methodClass proxy |
-	pragma := method pragmaAt: #autoCache.
-	pragma ifNil: [ ^ method ].
-	selector := method selector.
-
-
-	methodClass := method methodClass.
-
-	"Installing a MwMethodProxy"
-
-	proxy := AutoCacheMethodProxy onMethod: method.
-	proxy install
-]
-
-{ #category : #'as yet unclassified' }
-QuickWrap class >> doQuickWrapWithCompileHandler: method [
-
-	"Called when a method is compiled, right after adding it to the method dictionary of the class"
-
-	| pragma selector methodClass proxy |
-	pragma := method pragmaAt: #quickWrapWith:.
-	pragma ifNil: [ ^ method ].
-	selector := method selector.
-
-
-	methodClass := method methodClass.
-
-	"Installing a MwMethodProxy"
-
-	proxy := QuickWrapMethodProxy
-		         onMethod: method
-		         handlerSelector: pragma arguments first.
-	proxy install.
-	^ method
-]
-
-{ #category : #'as yet unclassified' }
 QuickWrap class >> executeMethodCompiledHandlersFor: method [
 
 	"Called when a method is compiled, right after adding it to the method dictionary of the class"
@@ -106,8 +65,6 @@ QuickWrap class >> executeMethodCompiledHandlersFor: method [
 			 each selector == method selector ] ]) ifTrue: [ ^ method ].
 	[ 
 	self currentlyWrapping add: method.
-	self doQuickWrapWithCompileHandler: method.
-	self doAutoCacheCompileHandler: method.
 	QwPostCompilationHandler subclassesDo: [ :s | 
 		(s methodHasPragma: method) ifTrue: [ 
 			s handleCompiledMethod: method ] ] ] ensure: [ 
