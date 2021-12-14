@@ -126,7 +126,7 @@ QuickWrap class >> patchClyOldMessageBrowserAdapter [
 
 	"Fixes a bug related to browsing implementors that filtered out proxified methods"
 
-	ClyOldMessageBrowserAdapter class compile: 'messages: anObject
+	ClyOldMessageBrowserAdapter compile: 'messages: anObject
 
 	messages := anObject collect: [ :m | m unproxifiedMethod ]'
 ]
