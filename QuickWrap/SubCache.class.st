@@ -129,7 +129,7 @@ SubCache class >> generateSubCacheFor: aMethod [
 { #category : #'as yet unclassified' }
 SubCache class >> handleCompiledMethod: aMethod [
 
-	"This is called by the quickWrap system if the method pragmas contains the prama of this class"
+	"This is called by the quickWrap system if the method pragmas contains the pragma of this class"
 
 	| selector |
 	selector := aMethod selector.

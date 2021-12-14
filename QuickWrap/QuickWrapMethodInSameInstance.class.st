@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 QuickWrapMethodInSameInstance class >> handleCompiledMethod: aMethod [
 
-	"This is called by the quickWrap system if the method pragmas contains the prama of this class"
+	"This is called by the quickWrap system if the method pragmas contains the pragma of this class"
 
 	| proxy pragma wrapperSelector |
 	pragma := (aMethod pragmas select: [ :p | 
