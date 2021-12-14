@@ -117,7 +117,18 @@ QuickWrap class >> installQuickWrapSystem [
 	#Its_installed_now.
 	#additionally_install_patches.
 	self patchIceRepository.
-	self patchContext
+	self patchContext.
+	self patchClyOldMessageBrowserAdapter
+]
+
+{ #category : #'as yet unclassified' }
+QuickWrap class >> patchClyOldMessageBrowserAdapter [
+
+	"Fixes a bug related to browsing implementors that filtered out proxified methods"
+
+	ClyOldMessageBrowserAdapter class compile: 'messages: anObject
+
+	messages := anObject collect: [ :m | m unproxifiedMethod ]'
 ]
 
 { #category : #'as yet unclassified' }
