@@ -105,7 +105,7 @@ QuickWrap class >> installQuickWrapSystem [
 	#Install_it_now.
 	ClassDescription compile: 'acceptsLoggingOfCompilation
 	<quickWrappedBy: #QuickWrap selector:
-	#acceptsLoggingOfCompilationWrapper:method:arg:>
+	#acceptsLoggingOfCompilationWrapper:method:args:>
 	^ true'.
 	originalMethod := Behavior methodDictionary at:
 		                  #addSelectorSilently:withMethod:.
