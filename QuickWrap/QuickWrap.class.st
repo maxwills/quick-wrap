@@ -115,8 +115,24 @@ QuickWrap class >> installQuickWrapSystem [
 		(self methodDictionary at: #addSelectorSilently:withMethod:)
 			sourceCode.
 	#Its_installed_now.
+	#additionally_install_patches.
 	self patchIceRepository.
-	#additionally_patching_IceRepositoty
+	self patchContext
+]
+
+{ #category : #'as yet unclassified' }
+QuickWrap class >> patchContext [
+
+	"Fixes an error that occurs when saving changes in a method when the debugger is currently executing its proxy."
+
+	| method source |
+	method := Context >> #quickWrapPrivRefreshWith:.
+	method ifNil: [ ^ self "we are in trouble" ].
+	source := method sourceCode
+		          copyReplaceAll: 'quickWrapPrivRefreshWith:'
+		          with: 'privRefreshWith:'.
+
+	Context compile: source
 ]
 
 { #category : #'as yet unclassified' }
