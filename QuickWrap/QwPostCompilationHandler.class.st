@@ -4,6 +4,13 @@ Class {
 	#category : #'QuickWrap-Core'
 }
 
+{ #category : #private }
+QwPostCompilationHandler class >> allPragmas [
+
+	<script>
+	^ Pragma allNamed: self handledPragma
+]
+
 { #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> handleCompiledMethod: aMethod [
 
@@ -22,4 +29,31 @@ QwPostCompilationHandler class >> handledPragma [
 QwPostCompilationHandler class >> methodHasPragma: method [
 
 	^ method pragmas anySatisfy: [ :p | p selector == self handledPragma ]
+]
+
+{ #category : #'as yet unclassified' }
+QwPostCompilationHandler class >> refreshAllProxies [
+
+	EpMonitor disableDuring: [ self subclassesDo: [ :s | s refreshProxies ] ]
+]
+
+{ #category : #'as yet unclassified' }
+QwPostCompilationHandler class >> refreshProxies [
+
+	| pragmas toRecompile |
+	toRecompile := OrderedCollection new.
+	pragmas := (Pragma allNamed: self handledPragma) select: [ :p | 
+		           p method unproxifiedMethod methodClass isObsolete not ].
+	pragmas do: [ :p | 
+		toRecompile add: { 
+				p method unproxifiedMethod methodClass.
+				p method unproxifiedMethod selector } ].
+	EpMonitor disableDuring: [ 
+		toRecompile do: [ :each | 
+			| mClass mSelector method |
+			mClass := each at: 1.
+			mSelector := each at: 2.
+
+			method := mClass methodDictionary at: mSelector ifAbsent: [ nil ].
+			method ifNotNil: [ method unproxifiedMethod recompile ] ] ]
 ]

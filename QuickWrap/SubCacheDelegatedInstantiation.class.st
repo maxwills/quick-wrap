@@ -43,16 +43,6 @@ SubCacheDelegatedInstantiation class >> handledPragma [
 ]
 
 { #category : #'as yet unclassified' }
-SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegations [
-
-	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
-
-	self refreshAllMethodsDelegationsForDelegates.
-	"Originals go after, to avoid doing them twice"
-	self refreshAllMethodsDelegationsForOriginals
-]
-
-{ #category : #'as yet unclassified' }
 SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForDelegates [
 
 	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
@@ -77,7 +67,8 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForOriginals
 	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
 
 	| pragmas |
-	pragmas := Pragma allNamed: self handledPragma.
+	pragmas := (Pragma allNamed: self handledPragma) select: [ :p | 
+		           p method unproxifiedMethod methodClass isObsolete not ].
 	pragmas do: [ :each | 
 		| selector pClass targetMethod sourceCode |
 		selector := each method selector.
@@ -86,6 +77,16 @@ SubCacheDelegatedInstantiation class >> refreshAllMethodsDelegationsForOriginals
 		sourceCode := targetMethod sourceCode.
 		EpMonitor disableDuring: [ 
 			pClass compile: sourceCode "Not using compileSecretly. We want to kep the actual source code" ] ]
+]
+
+{ #category : #'as yet unclassified' }
+SubCacheDelegatedInstantiation class >> refreshProxies [
+
+	"Should be called after loading packages with method delegations. Because its possible that the proxies are not installed if QuickWrap installation is executed as a post operation"
+
+	self refreshAllMethodsDelegationsForDelegates.
+	"Originals go after, to avoid doing them twice"
+	self refreshAllMethodsDelegationsForOriginals
 ]
 
 { #category : #'as yet unclassified' }

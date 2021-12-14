@@ -13,7 +13,7 @@ yourWrapperMethod: receiver wrappedMethod: aMethod arguments: args
 	""process the result here""
 	^ 'result is new: ' , res asString
 
-2. <#quickWrapBy: #AClass selector: #yourWrapperMethod:wrappedMethod:arguments:> 
+2. <#quickWrappedBy: #AClass selector: #yourWrapperMethod:wrappedMethod:arguments:> 
 ""Same as previous example, but the wrapper method can be defined in any class""
 3. <subCached>
 ""Auto cache method results. Used when in need for performance. You need to be sure that using
@@ -23,42 +23,33 @@ It doesn't uses proxies, instead, it automatically generates a subclass that cac
 ## Usage
 To use QuickWrap system, the installQuickWrapSystem method must be executed.
 QuickWrap installQuickWrapSystem
+
 Depending on the baseline installed, this step is performed automatically or you might need to do it manually.
+
 This will modify Behavior >> addSelectorSilently:withMethod: to add a post compilation hook.
 For explanations on how to use each proxy, see each class comments.!
-!QuickWrap commentStamp: 'Max 11/28/2021 10:57' prior: 34387187!
-## QuickWrap
-QuickWrap system adds a set of post method compilation functions. This functions are hooked by adding any of the following wrapping pragmas to your methods.
 
-<quickWrapWith: #yourWrapperMethodSelector>
-<subCached>
-(<autoCache> is now deprecated)
-
-## Usage
-To use QuickWrap system, the installQuickWrapSystem method must be executed.
-QuickWrap installQuickWrapSystem
-Depending on the baseline installed, this step is performed automatically or you might need to do it manually.
-This will modify Behavior >> addSelectorSilently:withMethod: to add a post compilation hook.
-For explanations on how to use each proxy, see each class comments.
-
-## What is in this class?
-
-The class side contains all the methods that the system uses.
-In instance side contains method templates. They are not used directly, but instead, their source code is used to compile other methods necessary to the system.
-
-## Others:
-Might use noteCompilationOf: aSelector meta: isMeta
-	""A hook allowing some classes to react to recompilation of certain selectors in the future.
+Uninstall the hooks and proxies by calliny QuickWrap uninstallQuickWrapSystem. Pragmas will remain, and also the generated code.
 
 "
 Class {
 	#name : #QuickWrap,
 	#superclass : #Object,
+	#classVars : [
+		'forceDisableLogging'
+	],
 	#classInstVars : [
 		'currentlyWrapping'
 	],
 	#category : #'QuickWrap-Core'
 }
+
+{ #category : #testing }
+QuickWrap class >> acceptsLoggingOfCompilationWrapper: receiver method: method args: args [
+
+	^ forceDisableLogging not and: [ 
+		  receiver withArgs: args executeMethod: method ]
+]
 
 { #category : #accessing }
 QuickWrap class >> currentlyWrapping [
@@ -67,6 +58,16 @@ QuickWrap class >> currentlyWrapping [
 
 	^ currentlyWrapping ifNil: [ 
 		  currentlyWrapping := OrderedCollection new ]
+]
+
+{ #category : #testing }
+QuickWrap class >> disableCompilationLoggingDuring: aBlock [
+
+	| forceFlag |
+	forceFlag := forceDisableLogging.
+	forceDisableLogging := true.
+	EpMonitor disableDuring: [ 
+		aBlock ensure: [ forceDisableLogging := forceFlag ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -85,6 +86,12 @@ QuickWrap class >> executeMethodCompiledHandlersFor: method [
 		self currentlyWrapping remove: method ]
 ]
 
+{ #category : #testing }
+QuickWrap class >> initialize [
+
+	forceDisableLogging := false
+]
+
 { #category : #'as yet unclassified' }
 QuickWrap class >> installQuickWrapSystem [
 
@@ -96,6 +103,10 @@ QuickWrap class >> installQuickWrapSystem [
 	#Uninstall_it_first.
 	self uninstallQuickWrapSystem.
 	#Install_it_now.
+	ClassDescription compile: 'acceptsLoggingOfCompilation
+	<quickWrappedBy: #QuickWrap selector:
+	#acceptsLoggingOfCompilationWrapper:method:arg:>
+	^ true'.
 	originalMethod := Behavior methodDictionary at:
 		                  #addSelectorSilently:withMethod:.
 	originalCompileSource := 'original_' , originalMethod sourceCode trim.
@@ -137,6 +148,12 @@ QuickWrap class >> patchIceRepository [
 		  ifNone: [ nil ]"
 ]
 
+{ #category : #'as yet unclassified' }
+QuickWrap class >> refreshAllWrappers [
+
+	QwPostCompilationHandler refreshAllProxies
+]
+
 { #category : #enumerating }
 QuickWrap class >> secretlyDo: aBlock [
 
@@ -149,15 +166,20 @@ QuickWrap class >> secretlyDo: aBlock [
 QuickWrap class >> uninstallQuickWrapSystem [
 
 	| originalMethod originalCompileSource |
+	self flag: 'First remove the Compilation hook'.
 	(Behavior methodDictionary includesKey:
-		 #original_addSelectorSilently:withMethod:) ifFalse: [ ^ self ].
-	originalMethod := Behavior methodDictionary at:
-		                  #original_addSelectorSilently:withMethod:.
-	originalCompileSource := originalMethod sourceCode trim 
-		                         withoutPrefix: #original_.
-	Behavior compile: originalCompileSource.
-	Behavior removeSelectorSilently:
-		#original_addSelectorSilently:withMethod:
+		 #original_addSelectorSilently:withMethod:) ifTrue: [ 
+		originalMethod := Behavior methodDictionary at:
+			                  #original_addSelectorSilently:withMethod:.
+		originalCompileSource := originalMethod sourceCode trim 
+			                         withoutPrefix: #original_.
+		Behavior compile: originalCompileSource.
+		Behavior removeSelectorSilently:
+			#original_addSelectorSilently:withMethod: ].
+
+
+	self flag: 'Secondily, recompile all the original methods'.
+	QwPostCompilationHandler refreshAllProxies
 ]
 
 { #category : #'as yet unclassified' }

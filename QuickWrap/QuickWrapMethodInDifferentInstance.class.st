@@ -29,5 +29,5 @@ QuickWrapMethodInDifferentInstance class >> handleCompiledMethod: aMethod [
 { #category : #'as yet unclassified' }
 QuickWrapMethodInDifferentInstance class >> handledPragma [
 
-	^ #quickWrapBy:selector:
+	^ #quickWrappedBy:selector:
 ]

@@ -53,13 +53,6 @@ QuickWrapMethodProxy class >> onMethod: aMethod delegateHandler: anObject select
 	^ proxy
 ]
 
-{ #category : #private }
-QuickWrapMethodProxy class >> uninstallAllWrappers [
-	"self uninstallAllWrappers"
-
-	self allSubInstancesDo: [ :inst | inst uninstall ]
-]
-
 { #category : #accessing }
 QuickWrapMethodProxy >> calypsoEnvironmentType [
 "Saving code changes trigger an event that calls this method. If not overridden, it will execute Object >> calypsoEnvironmentType which is not what is needed. MpMethodProxy didn't face this problem, because the installation workflow is different"
@@ -263,8 +256,11 @@ QuickWrapMethodProxy >> shouldWrap: aMethod [
 
 { #category : #installation }
 QuickWrapMethodProxy >> uninstall [
-	
-	| installedMethod |
+
+	^ self error:
+		  'do not unistall proxies directly. They are handled by the QuickWrap system and pragmas. 
+	To remove the wrap, remove the pragma from the code or uninstall QuickWrap'
+	"| installedMethod |
 	IsActiveInExecutionStack := true.
 	installedMethod := methodClass compiledMethodAt: selector ifAbsent: [ 
 		IsActiveInExecutionStack := false.
@@ -273,7 +269,7 @@ QuickWrapMethodProxy >> uninstall [
 		ifTrue: [ methodClass methodDict at: selector put: installedMethod wrappedMethod ].
 
 	self unproxifiedMethod: nil.
-	IsActiveInExecutionStack := false
+	IsActiveInExecutionStack := false"
 ]
 
 { #category : #accessing }

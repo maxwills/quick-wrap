@@ -1,16 +1,6 @@
 Class {
 	#name : #QuickWrapMethodProxyForDelegation,
-	#superclass : #Object,
-	#instVars : [
-		'selector',
-		'methodClass',
-		'isDisabled',
-		'delegateReceiver',
-		'proxifiedMethod',
-		'handlerSelector',
-		'activator',
-		'deactivator'
-	],
+	#superclass : #QuickWrapMethodProxy,
 	#pools : [
 		'MpMethodProxyPool'
 	],
@@ -33,152 +23,6 @@ QuickWrapMethodProxyForDelegation class >> uninstallAllWrappers [
 	"self uninstallAllWrappers"
 
 	self allSubInstancesDo: [ :inst | inst uninstall ]
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> calypsoEnvironmentType [
-"Saving code changes trigger an event that calls this method. If not overridden, it will execute Object >> calypsoEnvironmentType which is not what is needed. MpMethodProxy didn't face this problem, because the installation workflow is different"
-	^ proxifiedMethod calypsoEnvironmentType
-]
-
-{ #category : #initialization }
-QuickWrapMethodProxyForDelegation >> class: aClass selector: aSymbol [
-
-	self
-		methodClass: aClass;
-		selector: aSymbol
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> delegateReceiver [
-
-	^ delegateReceiver
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> delegateReceiver: anObject [
-
-	delegateReceiver := anObject
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> disable [
-
-	isDisabled := true
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> doesNotUnderstand: aMessage [
-	^ proxifiedMethod 
-			ifNotNil: [ proxifiedMethod 
-								perform: aMessage selector 
-								withArguments: aMessage arguments ]
-			ifNil: [ super doesNotUnderstand: aMessage ]
-			
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> fetchMethod [
-	
-	"Fetches the method to be instrumented"
-	^ methodClass >> selector
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> handlerSelector [
-
-	^ handlerSelector
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> handlerSelector: anObject [
-
-	handlerSelector := anObject
-]
-
-{ #category : #installation }
-QuickWrapMethodProxyForDelegation >> initialize [
-
-	super initialize.
-	isDisabled := true.
-	activator := MpMethodProxyActivator new
-]
-
-{ #category : #installation }
-QuickWrapMethodProxyForDelegation >> install [
-	"We have a method proxy with a method = class * selector of the method it will proxy."
-	
-	|  method |
-	method := methodClass compiledMethodAt: selector ifAbsent: [ 
-		MpCannotInstall signalWith: self ].
-	
-	(self shouldWrap: method) ifFalse: [ 
-		MpCannotInstall signalWith: self ].
-	
-	self unproxifiedMethod: method.
-	methodClass methodDict at: selector put: self.
-	
-	"Activate it now"
-	isDisabled := false.
-	^ self
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> isEnabled [
-
-	^ isDisabled not
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> isEnabled: anObject [
-
-	isDisabled := anObject not
-]
-
-{ #category : #testing }
-QuickWrapMethodProxyForDelegation >> isInstalled [
-	"Return whether the receiver is effectively installed in a method dictionary.
-	Note that in the case of nesting of method proxies the inner ones are not considered as installed."
-	
-	methodClass ifNotNil: [
-		selector ifNotNil: [ 
-			^ self == (methodClass methodDict at: selector ifAbsent: [])]].
-	^ false
-]
-
-{ #category : #testing }
-QuickWrapMethodProxyForDelegation >> isMethodProxy [
-
-	^ true
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> methodClass [
-	^ methodClass
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> methodClass: aClass [
-
-	methodClass := aClass
-]
-
-{ #category : #evaluating }
-QuickWrapMethodProxyForDelegation >> name [
-
-	^ self printString
-]
-
-{ #category : #printing }
-QuickWrapMethodProxyForDelegation >> printOn: aStream [
-
-	aStream
-		nextPutAll: self class name;
-		nextPutAll: '[';
-		nextPutAll: methodClass name;
-		nextPutAll: '>>#';
-		nextPutAll: selector;
-		nextPutAll: ']'
 ]
 
 { #category : #evaluating }
@@ -209,60 +53,6 @@ QuickWrapMethodProxyForDelegation >> run: aSelector with: anArrayOfObjects in: a
 	^ returnValue
 ]
 
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> selector [
-
-	^ selector
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> selector: aSymbol [
-
-	selector := aSymbol
-]
-
-{ #category : #installation }
-QuickWrapMethodProxyForDelegation >> shouldWrap: aMethod [
-
-	(aMethod isCompiledMethod not and: [ 
-		 (aMethod methodClass == self methodClass and: [ 
-			  aMethod selector == self handlerSelector ]) not ]) ifTrue: [ 
-		^ true ].
-
-	aMethod isCompiledMethod ifFalse: [ ^ false ].
-
-	^ aMethod pragmas noneSatisfy: [ :pragma | 
-		  pragma selector = #methodProxyCannotWrap ]
-]
-
-{ #category : #installation }
-QuickWrapMethodProxyForDelegation >> uninstall [
-	
-	| installedMethod |
-	IsActiveInExecutionStack := true.
-	installedMethod := methodClass compiledMethodAt: selector ifAbsent: [ 
-		IsActiveInExecutionStack := false.
-		^ self ].
-	installedMethod == self
-		ifTrue: [ methodClass methodDict at: selector put: installedMethod wrappedMethod ].
-
-	self unproxifiedMethod: nil.
-	IsActiveInExecutionStack := false
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> unproxifiedMethod [
-	"The unproxifedMethod returns the proxified method even in case we have multiple proxified nesting."
-	
-	^ proxifiedMethod ifNotNil: [ proxifiedMethod unproxifiedMethod ]
-]
-
-{ #category : #'when installed' }
-QuickWrapMethodProxyForDelegation >> unproxifiedMethod: aCompiledMethod [
-
-	proxifiedMethod := aCompiledMethod
-]
-
 { #category : #evaluating }
 QuickWrapMethodProxyForDelegation >> valueWithReceiver: receiver arguments: arguments [
 
@@ -281,22 +71,4 @@ QuickWrapMethodProxyForDelegation >> valueWithReceiver: receiver arguments: argu
 	"Eagerly set it to true to avoid instrumenting all messages done during the ensure"
 	IsActiveInExecutionStack := true ] methodProxyEnsure: activator.
 	^ result
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> wrappedClass [
-
-	^ methodClass
-]
-
-{ #category : #accessing }
-QuickWrapMethodProxyForDelegation >> wrappedClass: aClass [
-
-	methodClass := aClass
-]
-
-{ #category : #'when installed' }
-QuickWrapMethodProxyForDelegation >> wrappedMethod [
-
-	^ proxifiedMethod
 ]
