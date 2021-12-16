@@ -123,7 +123,8 @@ QuickWrap class >> installQuickWrapSystem [
 	#additionally_install_patches.
 	self patchIceRepository.
 	self patchContext.
-	self patchClyOldMessageBrowserAdapter
+	self patchClyOldMessageBrowserAdapter.
+	self patchDebugContext
 ]
 
 { #category : #'as yet unclassified' }
@@ -149,6 +150,24 @@ QuickWrap class >> patchContext [
 		          with: 'privRefreshWith:'.
 
 	Context compile: source
+]
+
+{ #category : #'as yet unclassified' }
+QuickWrap class >> patchDebugContext [
+
+	"Fixes an error that occurs when saving changes in a method when the debugger is currently executing its proxy.
+	(The unpatched case needs to save twice to display the changed method). It seems that it tries to refresh with the newMethod source code, but somehow this new method points to the old proxy, and therefore, the sourcecode display is the proxified one.
+	Now it is refreshed correctly.
+	"
+
+	| method source |
+	method := DebugContext >> #quickWrapRecompileCurrentMethodTo:notifying:.
+	method ifNil: [ ^ self "we are in trouble" ].
+	source := method sourceCode
+		          copyReplaceAll: 'quickWrapRecompileCurrentMethodTo:'
+		          with: 'recompileCurrentMethodTo:'.
+
+	DebugContext compile: source
 ]
 
 { #category : #'as yet unclassified' }
