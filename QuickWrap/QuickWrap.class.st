@@ -75,6 +75,10 @@ QuickWrap class >> executeMethodCompiledHandlersFor: method [
 
 	"Called when a method is compiled, right after adding it to the method dictionary of the class"
 
+	(method unproxifiedMethod methodClass = self or: [ 
+		 method unproxifiedMethod methodClass = self class ]) ifTrue: [ 
+		^ self "prevent handling compilation of this class method as a safety measure" ].
+
 	(self currentlyWrapping anySatisfy: [ :each | 
 		 each methodClass == method methodClass and: [ 
 			 each selector == method selector ] ]) ifTrue: [ ^ method ].

@@ -16,13 +16,13 @@ QwPostCompilationHandler class >> handleCompiledMethod: aMethod [
 
 	"This is called by the quickWrap system if the method pragmas contains the prama of this class"
 
-	^ self subclassResponsibility
+	^ self "Dont use self subclassResponsibility. See handledPragma comment"
 ]
 
 { #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> handledPragma [
 
-	^ self subclassResponsibility
+	^ #unknownPragma "Dont use self subclassResponsibility here. Doing so could break the image: when installing new subclases of this one, the compilation hook would be executed and the subclassResponsibility method would throw an exception (So you won't be able to compile anything). And it is difficult to fix that without recompiling"
 ]
 
 { #category : #'as yet unclassified' }
