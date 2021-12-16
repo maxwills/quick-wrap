@@ -133,7 +133,7 @@ SubCache class >> handleCompiledMethod: aMethod [
 
 	| selector |
 	selector := aMethod selector.
-	(self classHasSubCache: aMethod methodClass) ifFalse: [ 
+	(self classHasSubCache: aMethod unproxifiedMethod methodClass) ifFalse: [ 
 		| subCacheClass |
 		subCacheClass := self createSubCacheClassFor: aMethod methodClass.
 		self addSubCacheBaseSlotsAndMethods: subCacheClass ].

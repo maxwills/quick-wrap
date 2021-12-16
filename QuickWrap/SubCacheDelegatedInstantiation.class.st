@@ -17,20 +17,23 @@ SubCacheDelegatedInstantiation class >> handleCompiledMethod: aMethod [
 	(SubCache classHasSubCache: aMethod methodClass soleInstance)
 		ifFalse: [ 
 			subCacheClass := SubCache createSubCacheClassFor:
-				                 aMethod methodClass soleInstance.
+				                 aMethod unproxifiedMethod methodClass
+					                 soleInstance.
 			SubCache addSubCacheBaseSlotsAndMethods: subCacheClass ]
 		ifTrue: [ 
 			subCacheClass := self subCacheClassFor:
-				                 aMethod methodClass soleInstance ].
+				                 aMethod unproxifiedMethod methodClass
+					                 soleInstance ].
 	subCacheClass ifNil: [ 
 		^ self error: 'A SubCache is required to install delegation proxies' ].
 	"Copy the method to the deletage"
-	subCacheClass class compileSecretly: (aMethod sourceCode
+	subCacheClass class compileSecretly:
+		(aMethod unproxifiedMethod sourceCode
 			 copyReplaceAll: self handledPragma
 			 with: 'delegateMethodProxyTarget'). "prevent recursion"
 	"Install the delegation proxy. This will make the base class to execute the subclass' method instead (Ignoring its own method)"
 	proxy := QuickWrapMethodProxyForDelegation
-		         onMethod: aMethod
+		         onMethod: aMethod unproxifiedMethod
 		         delegateHandler: subCacheClass
 		         selector: aMethod selector.
 	proxy install

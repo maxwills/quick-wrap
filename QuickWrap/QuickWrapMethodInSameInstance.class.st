@@ -16,8 +16,8 @@ QuickWrapMethodInSameInstance class >> handleCompiledMethod: aMethod [
 	wrapperSelector := pragma arguments first.
 
 	proxy := QuickWrapMethodProxy
-		         onMethod: aMethod
-		         delegateHandler: aMethod methodClass soleInstance
+		         onMethod: aMethod unproxifiedMethod
+		         delegateHandler: aMethod unproxifiedMethod methodClass soleInstance
 		         selector: wrapperSelector.
 	proxy install
 ]

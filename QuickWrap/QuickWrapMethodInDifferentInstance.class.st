@@ -20,7 +20,7 @@ QuickWrapMethodInDifferentInstance class >> handleCompiledMethod: aMethod [
 	wrapperSelector := pragma arguments second.
 
 	proxy := QuickWrapMethodProxy
-		         onMethod: aMethod
+		         onMethod: aMethod unproxifiedMethod
 		         delegateHandler: [ self class environment at: wrapperClassName ]
 		         selector: wrapperSelector.
 	proxy install
