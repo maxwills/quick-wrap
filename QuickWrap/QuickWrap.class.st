@@ -103,6 +103,7 @@ QuickWrap class >> installQuickWrapSystem [
 
 	"This means that only installed methods (ie, methods that are added to a class' methodDictionary (The class itself doesn't need to be installed)) can be wrapped by using any of the wrapping pragmas"
 
+	<script>
 	| originalMethod originalCompileSource |
 	#Uninstall_it_first.
 	self uninstallQuickWrapSystem.
@@ -196,6 +197,7 @@ QuickWrap class >> secretlyDo: aBlock [
 { #category : #'as yet unclassified' }
 QuickWrap class >> uninstallQuickWrapSystem [
 
+	<script>
 	| originalMethod originalCompileSource |
 	self flag: 'First remove the Compilation hook'.
 	(Behavior methodDictionary includesKey:
