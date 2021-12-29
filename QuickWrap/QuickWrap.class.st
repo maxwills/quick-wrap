@@ -86,7 +86,10 @@ QuickWrap class >> executeMethodCompiledHandlersFor: method [
 	self currentlyWrapping add: method.
 	QwPostCompilationHandler subclassesDo: [ :s | 
 		(s methodHasPragma: method) ifTrue: [ 
-			s handleCompiledMethod: method ] ] ] ensure: [ 
+			[ s handleCompiledMethod: method ] onErrorDo: [ :e | 
+				self inform:
+					'QuickWrap PostCompilationHandler for ' , method asString
+					, ' failed. ' , e asString ] ] ] ] ensure: [ 
 		self currentlyWrapping remove: method ]
 ]
 
