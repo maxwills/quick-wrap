@@ -55,7 +55,7 @@ QuickWrapMethodProxy class >> onMethod: aMethod delegateHandler: anObject select
 
 { #category : #accessing }
 QuickWrapMethodProxy >> calypsoEnvironmentType [
-"Saving code changes trigger an event that calls this method. If not overridden, it will execute Object >> calypsoEnvironmentType which is not what is needed. MpMethodProxy didn't face this problem, because the installation workflow is different"
+"Saving code changes trigger an event that calls this method. If not overridden, it will execute Object >> calypsoEnvironmentType which is not what is needed. MpMethodProxy didn't face this problem, because the proxy installation workflow is different"
 	^ proxifiedMethod calypsoEnvironmentType
 ]
 
@@ -197,6 +197,27 @@ QuickWrapMethodProxy >> printOn: aStream [
 		nextPutAll: '>>#';
 		nextPutAll: selector;
 		nextPutAll: ']'
+]
+
+{ #category : #installation }
+QuickWrapMethodProxy >> qwDisableProxy [
+
+	"Restores the original method, removing the proxy. Use only this if something goes wrong."
+
+	| installedMethod |
+	IsActiveInExecutionStack := true.
+	installedMethod := methodClass
+		                   compiledMethodAt: selector
+		                   ifAbsent: [ 
+			                   IsActiveInExecutionStack := false.
+			                   ^ self ].
+	installedMethod == self ifTrue: [ 
+		methodClass methodDict
+			at: selector
+			put: installedMethod unproxifiedMethod ].
+
+	self unproxifiedMethod: nil.
+	IsActiveInExecutionStack := false
 ]
 
 { #category : #evaluating }

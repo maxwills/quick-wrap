@@ -1,3 +1,6 @@
+"
+A quickwarp to redirect a method. There is no ""wrapping"" at all. The proxified method is not executed. only the proxy's
+"
 Class {
 	#name : #QuickWrapMethodProxyForDelegation,
 	#superclass : #QuickWrapMethodProxy,
