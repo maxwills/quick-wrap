@@ -48,15 +48,13 @@ QuickWrapSafeMethodProxy >> valueSafelyWithReceiver: receiver arguments: argumen
 				          arguments } ]
 		on: MessageNotUnderstood
 		do: [ :e | 
-			| sContext |
-			sContext := e signalContext.
-			(sContext methodClass == self class and: [ 
-				 sContext methodSelector == #valueSafelyWithReceiver:arguments: ])
+			e message selector == #valueSafelyWithReceiver:arguments:
 				ifTrue: [ 
 					self inform: 'Error calling MethodProxy. ' , '()' , e asString
 						,
-						'. Disabling the proxy. It can be re-enabled by recompiling the original method with the pragma' ]
-				ifFalse: [ e pass ] ].
+						'. Disabling the proxy. It can be re-enabled by recompiling the original method with the pragma'.
+					self qwDisableProxy ]
+				ifFalse: [ e defaultAction ] ].
 	^ result
 ]
 
