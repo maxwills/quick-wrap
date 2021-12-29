@@ -259,7 +259,7 @@ QuickWrap >> addSelectorSilently: selector withMethod: method [
 				  ifTrue: [ 
 					  errMsg := 'QuickWrap: Unable to process method. Missing QuickWrap class >> #executeMethodCompiledHandlersFor:' ]
 				  ifFalse: [ 
-					  errMsg := 'QuickWrap: Unable to process method. Missing QuickWrap class >> #executeMethodCompiledHandlersFor:' ].
+					  errMsg := 'QuickWrap: Message not Understood', (e asString) ].
 			  self inform: errMsg.
 			  Transcript show: errMsg.
 			  returnVal ]
