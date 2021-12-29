@@ -134,7 +134,7 @@ QuickWrap class >> installQuickWrapSystem [
 QuickWrap class >> patchClyOldMessageBrowserAdapter [
 
 	"Fixes a bug related to browsing implementors that filtered out proxified methods"
-
+ 
 	ClyOldMessageBrowserAdapter compile: 'messages: anObject
 
 	messages := anObject collect: [ :m | m unproxifiedMethod ]'
@@ -246,5 +246,21 @@ QuickWrap >> addSelectorSilently: selector withMethod: method [
 	returnVal := self
 		             original_addSelectorSilently: selector
 		             withMethod: method.
-	^ QuickWrap executeMethodCompiledHandlersFor: method
+	^ [ 
+	  self class environment
+		  at: #QuickWrap
+		  ifPresent: [ :qwCls | 
+		  qwCls executeMethodCompiledHandlersFor: method ]
+		  ifAbsent: [ returnVal ] ]
+		  on: MessageNotUnderstood
+		  do: [ :e | 
+			  | errMsg |
+			  e message selector = #executeMethodCompiledHandlersFor:
+				  ifTrue: [ 
+					  errMsg := 'QuickWrap: Unable to process method. Missing QuickWrap class >> #executeMethodCompiledHandlersFor:' ]
+				  ifFalse: [ 
+					  errMsg := 'QuickWrap: Unable to process method. Missing QuickWrap class >> #executeMethodCompiledHandlersFor:' ].
+			  self inform: errMsg.
+			  Transcript show: errMsg.
+			  returnVal ]
 ]

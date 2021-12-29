@@ -20,13 +20,7 @@ QuickWrapSafeMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver 
 	(isDisabled or: [ "Check explicitly that the flag has been set.
 		This allows proxies to work independently of initialization side effects." 
 		 IsActiveInExecutionStack == true ]) ifTrue: [ 
-		^ self trySafely: [ 
-			  delegateReceiver value
-				  perform: handlerSelector
-				  withArguments: { 
-						  aReceiver.
-						  proxifiedMethod.
-						  anArrayOfObjects } ] ].
+		^ self valueSafelyWithReceiver: aReceiver arguments: anArrayOfObjects. ].
 
 	"We are now in the instrumentation world.
 	Do not instrument the instrumentation."
@@ -36,33 +30,34 @@ QuickWrapSafeMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver 
 	Otherwise the non-local return logic would be instrumented once the ensure block is executed.
 	However, since a lot of code executes between the ensure block and the real method return, this could end in infinite loops"
 	[ 
-	returnValue := self
-		               valueWithReceiver: aReceiver
-		               arguments: anArrayOfObjects ] ensure: deactivator.
+	returnValue := self valueSafelyWithReceiver: aReceiver arguments: anArrayOfObjects. ] ensure: deactivator.
 	^ returnValue
 ]
 
-{ #category : #'as yet unclassified' }
-QuickWrapSafeMethodProxy >> trySafely: aBlock [
+{ #category : #evaluating }
+QuickWrapSafeMethodProxy >> valueSafelyWithReceiver: receiver arguments: arguments [
 
-	| res shouldDisableProxy |
-	shouldDisableProxy := false.
-	res := aBlock
-		       on: MessageNotUnderstood
-		       do: [ :e | 
-			       | sContext |
-			       sContext := e signalContext.
-			       (sContext methodClass == self class and: [ 
-				        sContext selector == #valueWithReceiver:arguments: ]) 
-				       ifTrue: [ "Disble the proxy in the case where calling the unproxified method fails (for example, when the unproxified method is deleted, but somehow the proxi still remains to be executed." 
-					       shouldDisableProxy := true ].
-			       shouldDisableProxy ifTrue: [ 
-				       self inform: 'ERROR IN PROXY FOR ' , selector asString
-					       ,
-					       '. Disabling the proxy. It can be re-enabled by recompiling the method with the pragma'.
-				       self qwDisableProxy ].
-			       e signalIn: e signalContext ].
-	^ res
+	<methodProxyCannotWrap>
+	| result |
+	[ 
+	result := delegateReceiver value
+		          perform: handlerSelector
+		          withArguments: { 
+				          receiver.
+				          proxifiedMethod.
+				          arguments } ]
+		on: MessageNotUnderstood
+		do: [ :e | 
+			| sContext |
+			sContext := e signalContext.
+			(sContext methodClass == self class and: [ 
+				 sContext methodSelector == #valueSafelyWithReceiver:arguments: ])
+				ifTrue: [ 
+					self inform: 'Error calling MethodProxy. ' , '()' , e asString
+						,
+						'. Disabling the proxy. It can be re-enabled by recompiling the original method with the pragma' ]
+				ifFalse: [ e pass ] ].
+	^ result
 ]
 
 { #category : #evaluating }
@@ -74,13 +69,7 @@ QuickWrapSafeMethodProxy >> valueWithReceiver: receiver arguments: arguments [
 	Otherwise the non-local return logic would be instrumented and this could end in infinite loops"
 	[ 
 	IsActiveInExecutionStack := false.
-	result := self trySafely: [ 
-		          delegateReceiver value
-			          perform: handlerSelector
-			          withArguments: { 
-					          receiver.
-					          proxifiedMethod.
-					          arguments } ].
+	result := self valueSafelyWithReceiver: receiver arguments: arguments.
 	"the following code should be executed by the wrapper"
 	"MwMethodProxy receiver: receiver withArgs: arguments executeMethod: wrappedMethod."
 
