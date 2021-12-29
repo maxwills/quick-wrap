@@ -230,10 +230,12 @@ QuickWrapMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver [
 	(isDisabled or: [ "Check explicitly that the flag has been set.
 		This allows proxies to work independently of initialization side effects." 
 		 IsActiveInExecutionStack == true ]) ifTrue: [ 
-		^ delegateReceiver value perform: handlerSelector withArguments: { 
-				  aReceiver.
-				  proxifiedMethod.
-				  anArrayOfObjects } ].
+		^ delegateReceiver value
+		          perform: handlerSelector
+		          withArguments: { 
+				          aReceiver.
+				          proxifiedMethod.
+				          anArrayOfObjects } ].
 
 	"We are now in the instrumentation world.
 	Do not instrument the instrumentation."

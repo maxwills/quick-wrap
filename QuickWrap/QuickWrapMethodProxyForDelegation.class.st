@@ -29,34 +29,6 @@ QuickWrapMethodProxyForDelegation class >> uninstallAllWrappers [
 ]
 
 { #category : #evaluating }
-QuickWrapMethodProxyForDelegation >> run: aSelector with: anArrayOfObjects in: aReceiver [
-
-	"Do not intercept"
-
-	<methodProxyCannotWrap>
-	| returnValue |
-	(isDisabled or: [ "Check explicitly that the flag has been set.
-		This allows proxies to work independently of initialization side effects." 
-		 IsActiveInExecutionStack == true ]) ifTrue: [ 
-		^ delegateReceiver 
-			  withArgs: anArrayOfObjects
-			  executeMethod: proxifiedMethod ].
-
-	"We are now in the instrumentation world.
-	Do not instrument the instrumentation."
-	IsActiveInExecutionStack := true.
-
-	"Purposely do not use a non-local return.
-	Otherwise the non-local return logic would be instrumented once the ensure block is executed.
-	However, since a lot of code executes between the ensure block and the real method return, this could end in infinite loops"
-	[ 
-	returnValue := self
-		               valueWithReceiver: aReceiver
-		               arguments: anArrayOfObjects ] ensure: deactivator.
-	^ returnValue
-]
-
-{ #category : #evaluating }
 QuickWrapMethodProxyForDelegation >> valueWithReceiver: receiver arguments: arguments [
 
 	<methodProxyCannotWrap>
