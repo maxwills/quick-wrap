@@ -38,6 +38,6 @@ QuickWrapForPragmaAutocompletion class >> handleCompiledMethod: aMethod [
 { #category : #'as yet unclassified' }
 QuickWrapForPragmaAutocompletion class >> handledPragma [
 
-	<quickWrapAddPragmaToAutocompletion> 
-	^ #quickWrapAddPragmaToAutocompletion 
+	"<quickWrapAddPragmaToAutocompletion>" 
+	^ #quickWrapAddPragmaToAutocompletionB 
 ]
