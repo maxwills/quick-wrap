@@ -29,7 +29,9 @@ Depending on the baseline installed, this step is performed automatically or you
 This will modify Behavior >> addSelectorSilently:withMethod: to add a post compilation hook.
 For explanations on how to use each proxy, see each class comments.!
 
-Uninstall the hooks and proxies by calliny QuickWrap uninstallQuickWrapSystem. Pragmas will remain, and also the generated code.
+Uninstall the hooks and proxies by calling QuickWrap uninstallQuickWrapSystem. Pragmas will remain, and also the generated code, although they will become inactive, as expected.
+
+To enable the System, first execute QuickWrap installQuickWrapSystem to enable the compilation hooks. Then execute QuickWrap refreshAllWrappers to activate the pragmas.
 
 "
 Class {
@@ -205,6 +207,7 @@ QuickWrap class >> patchIceRepository [
 { #category : #'as yet unclassified' }
 QuickWrap class >> refreshAllWrappers [
 
+	<script>
 	QwPostCompilationHandler refreshAllProxies
 ]
 
