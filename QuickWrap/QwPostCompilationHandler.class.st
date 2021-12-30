@@ -27,7 +27,7 @@ QwPostCompilationHandler class >> handleCompiledMethod: aMethod [
 
 { #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> handledPragma [
-
+"<quickWrapAddPragmaToAutocompletion> subclasses should use this pragma"
 	^ #unknownPragma "Dont use self subclassResponsibility here. Doing so could break the image: when installing new subclases of this one, the compilation hook would be executed and the subclassResponsibility method would throw an exception (So you won't be able to compile anything). And it is difficult to fix that without recompiling"
 ]
 
