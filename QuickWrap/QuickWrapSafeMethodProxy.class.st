@@ -20,7 +20,21 @@ QuickWrapSafeMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver 
 	(isDisabled or: [ "Check explicitly that the flag has been set.
 		This allows proxies to work independently of initialization side effects." 
 		 IsActiveInExecutionStack == true ]) ifTrue: [ 
-		^ self valueSafelyWithReceiver: aReceiver arguments: anArrayOfObjects. ].
+		^ [ 
+		  delegateReceiver value perform: handlerSelector withArguments: { 
+				  aReceiver.
+				  proxifiedMethod.
+				  anArrayOfObjects } ]
+			  on: MessageNotUnderstood
+			  do: [ :e | 
+				  e message selector == #valueSafelyWithReceiver:arguments:
+					  ifTrue: [ 
+						  self inform:
+							  'Error calling MethodProxy. ' , '()' , e asString
+							  ,
+							  '. Disabling the proxy. It can be re-enabled by recompiling the original method with the pragma'.
+						  self qwDisableProxy ]
+					  ifFalse: [ e defaultAction ] ] ].
 
 	"We are now in the instrumentation world.
 	Do not instrument the instrumentation."
@@ -30,7 +44,9 @@ QuickWrapSafeMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver 
 	Otherwise the non-local return logic would be instrumented once the ensure block is executed.
 	However, since a lot of code executes between the ensure block and the real method return, this could end in infinite loops"
 	[ 
-	returnValue := self valueSafelyWithReceiver: aReceiver arguments: anArrayOfObjects. ] ensure: deactivator.
+	returnValue := self
+		               valueWithReceiver: aReceiver
+		               arguments: anArrayOfObjects ] ensure: deactivator.
 	^ returnValue
 ]
 
@@ -67,7 +83,23 @@ QuickWrapSafeMethodProxy >> valueWithReceiver: receiver arguments: arguments [
 	Otherwise the non-local return logic would be instrumented and this could end in infinite loops"
 	[ 
 	IsActiveInExecutionStack := false.
-	result := self valueSafelyWithReceiver: receiver arguments: arguments.
+	result := [ 
+	          delegateReceiver value
+		          perform: handlerSelector
+		          withArguments: { 
+				          receiver.
+				          proxifiedMethod.
+				          arguments } ]
+		          on: MessageNotUnderstood
+		          do: [ :e | 
+			          e message selector == #valueSafelyWithReceiver:arguments:
+				          ifTrue: [ 
+					          self inform:
+						          'Error calling MethodProxy. ' , '()' , e asString
+						          ,
+						          '. Disabling the proxy. It can be re-enabled by recompiling the original method with the pragma'.
+					          self qwDisableProxy ]
+				          ifFalse: [ e defaultAction ] ].
 	"the following code should be executed by the wrapper"
 	"MwMethodProxy receiver: receiver withArgs: arguments executeMethod: wrappedMethod."
 

@@ -12,6 +12,12 @@ QwPostCompilationHandler class >> allPragmas [
 ]
 
 { #category : #'as yet unclassified' }
+QwPostCompilationHandler class >> allowUninstall [
+
+	^ true
+]
+
+{ #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> handleCompiledMethod: aMethod [
 
 	"This is called by the quickWrap system if the method pragmas contains the prama of this class"
@@ -34,7 +40,7 @@ QwPostCompilationHandler class >> methodHasPragma: method [
 { #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> refreshAllProxies [
 
-	EpMonitor disableDuring: [ self subclassesDo: [ :s | s refreshProxies ] ]
+	EpMonitor disableDuring: [ self subclassesDo: [ :s | s refreshProxiesIfAllowed ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -56,4 +62,10 @@ QwPostCompilationHandler class >> refreshProxies [
 
 			method := mClass methodDictionary at: mSelector ifAbsent: [ nil ].
 			method ifNotNil: [ method unproxifiedMethod recompile ] ] ]
+]
+
+{ #category : #'as yet unclassified' }
+QwPostCompilationHandler class >> refreshProxiesIfAllowed [
+
+	self allowUninstall ifTrue: [ self refreshProxies ]
 ]
