@@ -1,10 +1,30 @@
 Extension { #name : #ClassDescription }
 
 { #category : #'*QuickWrap' }
+ClassDescription >> addSlotInOrder: aSlot [
+
+	^self subclassResponsibility
+]
+
+{ #category : #'*QuickWrap' }
 ClassDescription >> addSlotSecretly: aSlot [
 
 	SystemAnnouncer uniqueInstance suspendAllWhile: [ 
 		^ self addSlot: aSlot ]
+]
+
+{ #category : #'*QuickWrap' }
+ClassDescription >> addSlotSecretlyAndInOrder: aSlot [
+
+	SystemAnnouncer uniqueInstance suspendAllWhile: [ 
+		^ self addSlotInOrder: aSlot ] 
+]
+
+{ #category : #'*QuickWrap' }
+ClassDescription >> addSlotSecretlyAndOrderly: aSlot [
+
+	SystemAnnouncer uniqueInstance suspendAllWhile: [ 
+		^ self addSlotInOrder: aSlot ] 
 ]
 
 { #category : #'*QuickWrap' }

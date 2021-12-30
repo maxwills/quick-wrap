@@ -13,7 +13,7 @@ Class {
 SubCache class >> addSubCacheBaseSlotsAndMethods: subCacheClass [
 
 	| updateMethod |
-	subCacheClass addSlotSecretly: #_cacheTimeKey => InstanceVariableSlot.
+	subCacheClass addSlotSecretlyAndInOrder: #_cacheTimeKey => InstanceVariableSlot.
 	updateMethod := subCacheClass methodDictionary
 		                at: #updateCacheTimeKey
 		                ifAbsent: [ nil ].
@@ -119,9 +119,9 @@ SubCache class >> generateSubCacheFor: aMethod [
 		              with: selector.
 	(targetClass slots anySatisfy: [ :s | 
 		 s name == (#__cached_ , selector) ]) ifFalse: [ 
-		targetClass addSlotSecretly:
+		targetClass addSlotSecretlyAndInOrder: 
 			#__cached_ , selector => InstanceVariableSlot.
-		targetClass addSlotSecretly:
+		targetClass addSlotSecretlyAndInOrder:
 			#__cached_ , selector , #TimeKey => InstanceVariableSlot ].
 	targetClass compileSecretly: sourceCode
 ]
@@ -156,7 +156,7 @@ SubCache class >> regenerateSubCacheForClass: aClass [
 			  'The class can''t have subCache. Delete its subclasses.' ].
 	subCacheClass := self createSubCacheClassFor: aClass.
 	self addSubCacheBaseSlotsAndMethods: subCacheClass.
-	aClass methodDictionary valuesDo: [ :method | 
+	(aClass methodDictionary values sorted: [:a :b| a selector < b selector]) do: [ :method | 
 		(self methodHasPragma: method) ifTrue: [ 
 			self generateSubCacheFor: method ] ]
 ]
