@@ -139,7 +139,10 @@ QuickWrap class >> patchClyOldMessageBrowserAdapter [
  
 	ClyOldMessageBrowserAdapter compile: 'messages: anObject
 
-	messages := anObject collect: [ :m | m unproxifiedMethod ]'
+	messages := anObject collect: [ :m | 
+		            (m respondsTo: #unproxifiedMethod)
+			            ifTrue: [ m unproxifiedMethod ]
+			            ifFalse: [ m ] ]'
 ]
 
 { #category : #'as yet unclassified' }

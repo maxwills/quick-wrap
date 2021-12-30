@@ -26,5 +26,6 @@ QuickWrapSafelyMethodInDifferentInstance class >> handleCompiledMethod: aMethod 
 { #category : #'as yet unclassified' }
 QuickWrapSafelyMethodInDifferentInstance class >> handledPragma [
 
-	^ #quickWrappedSafelyBy:selector:
+	<qwpAddPragmaToAutocompletion>
+	^ #qwpWrappedSafelyBy:selector:
 ]

@@ -144,7 +144,8 @@ SubCache class >> handleCompiledMethod: aMethod [
 { #category : #'as yet unclassified' }
 SubCache class >> handledPragma [
 
-	^ #subCached
+	<qwpWrapAddPragmaToAutocompletion>
+	^ #qwpSubCached
 ]
 
 { #category : #'as yet unclassified' }

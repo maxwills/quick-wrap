@@ -42,7 +42,8 @@ SubCacheDelegatedInstantiation class >> handleCompiledMethod: aMethod [
 { #category : #'as yet unclassified' }
 SubCacheDelegatedInstantiation class >> handledPragma [
 
-	^ #subCacheDelegated
+	<qwpAddPragmaToAutocompletion>
+	^ #qwpSubCacheDelegated
 ]
 
 { #category : #'as yet unclassified' }
