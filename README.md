@@ -9,7 +9,8 @@ Metacello new
     load.
 ```
 
-Add "dynamic behavior" to pragmas.
+*Adds "dynamic behavior" to pragmas.*  
+
 To install the compilation hooks, execute:
 ```Smalltalk
 QuickWrap installQuickWrapSystem
