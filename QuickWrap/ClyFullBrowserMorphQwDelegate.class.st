@@ -45,5 +45,5 @@ ClyFullBrowserMorphQwDelegate >> extent: aPoint [
 { #category : #api }
 ClyFullBrowserMorphQwDelegate >> initialExtent [
 
-	^ rememberedExtent
+	^ 1024 @ 768 "rememberedExtent"
 ]
