@@ -1,3 +1,6 @@
+"
+This class defines one of the Post compilation rules for addPragmaToAutocomletion pragma, and also stores autogerated methods in the instance side. The methos in the instance side do nothing, and are there only to provide autoCompletion hints for the registered pragmas.
+"
 Class {
 	#name : #QuickWrapForPragmaAutocompletion,
 	#superclass : #QwPostCompilationHandler,
