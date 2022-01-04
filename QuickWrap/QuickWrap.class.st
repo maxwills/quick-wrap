@@ -3,10 +3,12 @@
 QuickWrap system adds a set of post method compilation functions. This functions are hooked by adding any of the following wrapping pragmas to your methods.
 
 1. <quickWrapWith: #yourWrapperMethod:wrappedMethod:arguments:> 
+
 In the same object, then define
+
 yourWrapperMethod: receiver wrappedMethod: aMethod arguments: args
-""receiver object, aMethod is the wrapped method, args is the list of arguments of the original call""
-""IN THIS WRAPPER, YOU MUST CALL THE WRAPPED METHOD YOURSELF (if you intend so)""
+	""receiver object, aMethod is the wrapped method, args is the list of arguments of the original call""
+	""IN THIS WRAPPER, YOU MUST CALL THE WRAPPED METHOD YOURSELF (if you intend so)""
 	| res |
 	""process the arguments here""
 	res := receiver execute: aMethod withArgs: args.
@@ -14,8 +16,11 @@ yourWrapperMethod: receiver wrappedMethod: aMethod arguments: args
 	^ 'result is new: ' , res asString
 
 2. <#quickWrappedBy: #AClass selector: #yourWrapperMethod:wrappedMethod:arguments:> 
+
 ""Same as previous example, but the wrapper method can be defined in any class""
+
 3. <subCached>
+
 ""Auto cache method results. Used when in need for performance. You need to be sure that using
 this cache mechanism is faster than computing a method return.
 It doesn't uses proxies, instead, it automatically generates a subclass that caches its super class method return values. The cached values lifetime is controlable""

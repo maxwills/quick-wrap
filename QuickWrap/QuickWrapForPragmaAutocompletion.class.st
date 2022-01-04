@@ -50,30 +50,3 @@ QuickWrapForPragmaAutocompletion class >> handledPragma [
 	<qwpAddPragmaToAutocompletion>
 	^ #qwpAddPragmaToAutocompletion 
 ]
-
-{ #category : #'as yet unclassified' }
-QuickWrapForPragmaAutocompletion class >> testCreateMethodHeaderForSelector [
-
-	"Put in a test case with other tests"
-
-	<script>
-	| res expected input |
-	input := #my:method:.
-	expected := 'my: arg1 method: arg2 '.
-	res := self createMethodHeaderForSelector: input.
-	self assert: expected asString = res.
-
-	input := #my:.
-	expected := 'my: arg1 '.
-	res := self createMethodHeaderForSelector: input.
-
-	self assert: expected asString = res.
-
-	input := #my:method:with:arguments:.
-	expected := 'my: arg1 method: arg2 with: arg3 arguments: arg4 '.
-	res := self createMethodHeaderForSelector: input.
-
-	self assert: expected asString = res.
-
-	self inform: 'Test passed'
-]

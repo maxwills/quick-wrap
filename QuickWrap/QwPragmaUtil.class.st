@@ -13,6 +13,14 @@ QwPragmaUtil class >> default [
 	^ default
 ]
 
+{ #category : #'reflective operations' }
+QwPragmaUtil class >> doesNotUnderstand: message [
+
+	(self methodDict includesKey: message selector) ifTrue: [ "No lookups" 
+		^ message sendTo: default ].
+	^ super doesNotUnderstand: message
+]
+
 { #category : #initialization }
 QwPragmaUtil class >> initialize [
 

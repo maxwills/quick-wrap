@@ -8,7 +8,7 @@ Class {
 QwPostCompilationHandler class >> allPragmas [
 
 	<script>
-	^ Pragma allNamed: self handledPragma
+	^ Pragma fullListOfAllNamed: self handledPragma
 ]
 
 { #category : #'as yet unclassified' }
@@ -39,6 +39,13 @@ QwPostCompilationHandler class >> handledPragma [
 ]
 
 { #category : #'as yet unclassified' }
+QwPostCompilationHandler class >> inspectAllPragmas [
+
+	<script>
+	self allPragmas inspect
+]
+
+{ #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> methodHasPragma: method [
 
 	^ method pragmas anySatisfy: [ :p | p selector == self handledPragma ]
@@ -54,10 +61,20 @@ QwPostCompilationHandler class >> refreshAllProxies [
 QwPostCompilationHandler class >> refreshProxies [
 
 	| pragmas toRecompile |
+	Transcript
+		show: 'refreshing ' , self class name;
+		cr.
 	toRecompile := OrderedCollection new.
-	pragmas := (Pragma allNamed: self handledPragma) select: [ :p | 
+	pragmas := self allPragmas select: [ :p | 
 		           p method unproxifiedMethod methodClass isObsolete not ].
 	pragmas do: [ :p | 
+		Transcript
+			show: 'method detected ' , p asString;
+			cr.
+		Transcript
+			show:
+				' In: ' , p method methodClass name , ' >> #' , p method selector;
+			cr.
 		toRecompile add: { 
 				p method unproxifiedMethod methodClass.
 				p method unproxifiedMethod selector } ].
@@ -68,7 +85,11 @@ QwPostCompilationHandler class >> refreshProxies [
 			mSelector := each at: 2.
 
 			method := mClass methodDictionary at: mSelector ifAbsent: [ nil ].
-			method ifNotNil: [ method unproxifiedMethod recompile ] ] ]
+			method ifNotNil: [ 
+				method unproxifiedMethod methodClass compile: method sourceCode ] ] ].
+	Transcript
+		show: 'refreshed ' , self class name;
+		cr
 ]
 
 { #category : #'as yet unclassified' }
