@@ -61,20 +61,10 @@ QwPostCompilationHandler class >> refreshAllProxies [
 QwPostCompilationHandler class >> refreshProxies [
 
 	| pragmas toRecompile |
-	Transcript
-		show: 'refreshing ' , self class name;
-		cr.
 	toRecompile := OrderedCollection new.
 	pragmas := self allPragmas select: [ :p | 
 		           p method unproxifiedMethod methodClass isObsolete not ].
 	pragmas do: [ :p | 
-		Transcript
-			show: 'method detected ' , p asString;
-			cr.
-		Transcript
-			show:
-				' In: ' , p method methodClass name , ' >> #' , p method selector;
-			cr.
 		toRecompile add: { 
 				p method unproxifiedMethod methodClass.
 				p method unproxifiedMethod selector } ].
@@ -86,10 +76,7 @@ QwPostCompilationHandler class >> refreshProxies [
 
 			method := mClass methodDictionary at: mSelector ifAbsent: [ nil ].
 			method ifNotNil: [ 
-				method unproxifiedMethod methodClass compile: method sourceCode ] ] ].
-	Transcript
-		show: 'refreshed ' , self class name;
-		cr
+				method unproxifiedMethod methodClass compile: method sourceCode ] ] ]
 ]
 
 { #category : #'as yet unclassified' }
