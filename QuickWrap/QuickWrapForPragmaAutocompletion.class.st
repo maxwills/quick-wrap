@@ -24,8 +24,7 @@ QuickWrapForPragmaAutocompletion class >> handleCompiledMethod: aMethod [
 	"This is called by the quickWrap system if the method pragmas contains the pragma of this class"
 
 	| pragma pragmaHandledPragma |
-	pragma := (aMethod pragmas select: [ :p | 
-		           p selector = self handledPragma ]) first.
+	pragma := self getHandledPragma: aMethod.
 
 	pragma method selector = #handledPragma ifFalse: [ ^ self ].
 

@@ -10,8 +10,7 @@ QuickWrapMethodInSameInstance class >> handleCompiledMethod: aMethod [
 	"This is called by the quickWrap system if the method pragmas contains the pragma of this class"
 
 	| proxy pragma wrapperSelector |
-	pragma := (aMethod pragmas select: [ :p | 
-		           p selector = self handledPragma ]) first.
+	pragma := self getHandledPragma: aMethod.
 
 	wrapperSelector := pragma arguments first.
 

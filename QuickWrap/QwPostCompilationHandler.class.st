@@ -18,6 +18,13 @@ QwPostCompilationHandler class >> allowUninstall [
 ]
 
 { #category : #'as yet unclassified' }
+QwPostCompilationHandler class >> getHandledPragma: method [
+
+	^ (method pragmas select: [ :p | p selector = self handledPragma ])
+		  first
+]
+
+{ #category : #'as yet unclassified' }
 QwPostCompilationHandler class >> handleCompiledMethod: aMethod [
 
 	"This is called by the quickWrap system if the method pragmas contains the prama of this class"
