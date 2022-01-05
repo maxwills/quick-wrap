@@ -7,8 +7,9 @@ ClyFullBrowserMorph class >> new [
 
 	"If QuickWrap is active, the following code will be executed as if it was called in the subclass. If not active, it will be executed normally. "
 
-	<qwpWrappedBy: #ClyFullBrowserMorphQwDelegate selector:
-	#handleSuperNew:wrappedMethod:arguments:>
+"UNCOMMENT THE NEXT TO ENABLE THE WRAPPER"
+	"<qwpWrappedBy: #ClyFullBrowserMorphQwDelegate selector:
+	#handleSuperNew:wrappedMethod:arguments:>"
 
 	^ super new
 ]
