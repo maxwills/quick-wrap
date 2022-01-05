@@ -15,6 +15,18 @@ CompiledMethod >> detectPragmaIndex: aSelector [
 ]
 
 { #category : #'*QuickWrap' }
+CompiledMethod >> isInstalledOrProxified [
+
+	self methodClass ifNotNil: [ :class | 
+		self selector ifNotNil: [ :selector | 
+			| installedMethod |
+			installedMethod := class compiledMethodAt: selector ifAbsent: nil.
+			^(self == installedMethod or: [ 
+				self == installedMethod unproxifiedMethod ] )] ].
+	^ false
+]
+
+{ #category : #'*QuickWrap' }
 CompiledMethod >> removePragmaNamed: pragmaSelector [
 
 	"Adds the pragma to the method source code, then recompiles it. Doesn't check if exists."

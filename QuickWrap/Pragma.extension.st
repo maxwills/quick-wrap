@@ -14,5 +14,6 @@ Pragma class >> fullListOfAllNamed: aSymbol [
 		self pragmaCache removeKey: aSymbol ifAbsent: [  ] ].
 	"we check if the pragma is really from an installed method 
 	(others will be cleaned up by the gc when the method is garbadge collected)"
-	^ pragmas asArray
+
+	^ (pragmas select: [ :s | s method isInstalledOrProxified ]) asArray
 ]
