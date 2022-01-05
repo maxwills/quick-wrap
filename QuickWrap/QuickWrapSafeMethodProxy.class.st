@@ -34,7 +34,12 @@ QuickWrapSafeMethodProxy >> run: aSelector with: anArrayOfObjects in: aReceiver 
 							  ,
 							  '. Disabling the proxy. It can be re-enabled by recompiling the original method with the pragma'.
 						  self qwDisableProxy ]
-					  ifFalse: [ e defaultAction ] ] ].
+					  ifFalse: [ 
+						self flag: 'SEEKER USERS READ THIS:
+						To see details of the exception, evaluate the following line (Select and do cmd+d):
+						 e debug "you can only debug it once"
+						'.
+						e defaultAction ] ] ].
 
 	"We are now in the instrumentation world.
 	Do not instrument the instrumentation."
