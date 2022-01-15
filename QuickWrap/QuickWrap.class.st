@@ -2,6 +2,11 @@
 ## QuickWrap
 QuickWrap system adds a set of post method compilation functions. This functions are hooked by adding any of the following wrapping pragmas to your methods.
 
+0: IMPORTANT!!!!!!!!!!
+Install by executing: QuickWrap installQuickWrapSystem ""enables the compilation hook"".
+Then, activate the existing pragmas by executing: QuickWrap refreshAllWrappers ""activates existing pragmas"".
+(Without last line, already existing pragmas remain inactive unless the methods are recompiled)
+
 1. <quickWrapWith: #yourWrapperMethod:wrappedMethod:arguments:> 
 
 In the same object, then define
