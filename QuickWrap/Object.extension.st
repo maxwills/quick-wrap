@@ -5,7 +5,8 @@ Object >> execute: aMethod withArgs: args [
 
 	"Calls the evaluation primitive"
 
-	^ aMethod receiver: self withArguments: args executeMethod: aMethod
+	 "^ aMethod receiver: self withArguments: args executeMethod: aMethod" "non P9 compatible"
+	^ self withArgs: args executeMethod: aMethod "P9 compatible"
 ]
 
 { #category : #'*QuickWrap' }
