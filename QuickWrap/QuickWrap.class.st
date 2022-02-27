@@ -127,18 +127,16 @@ QuickWrap class >> installQuickWrapSystem [
 	<quickWrappedBy: #QuickWrap selector:
 	#acceptsLoggingOfCompilationWrapper:method:args:>
 	^ true'.
-	originalMethod := Behavior methodDictionary at:
-		                  #addSelectorSilently:withMethod:.
+	originalMethod := Behavior methodDictionary at: #addSelectorSilently:withMethod:.
 	originalCompileSource := 'original_' , originalMethod sourceCode trim.
 	Behavior compile: originalCompileSource.
-	Behavior compile:
-		(self methodDictionary at: #addSelectorSilently:withMethod:)
-			sourceCode.
+	Behavior compile: (self methodDictionary at: #addSelectorSilently:withMethod:) sourceCode.
 	#Its_installed_now.
 	#additionally_install_patches.
 	self patchIceRepository.
 	self patchContext.
 	self patchClyOldMessageBrowserAdapter.
+	self patchMpMethodProxy.
 	self patchDebugContext
 ]
 
@@ -215,6 +213,16 @@ QuickWrap class >> patchIceRepository [
 	^ self registry
 		  detect: [ :each | each includesPackageNamed: aPackage name ]
 		  ifNone: [ nil ]"
+]
+
+{ #category : #'as yet unclassified' }
+QuickWrap class >> patchMpMethodProxy [
+
+	"Fixes a calypso bug related to proxies"
+
+	MpMethodProxy compile: 'calypsoEnvironmentType
+	"See QuickWrapMethodProxy >> #calypsoEnvironmentType"
+	^ proxifiedMethod calypsoEnvironmentType'
 ]
 
 { #category : #'as yet unclassified' }
