@@ -24,6 +24,6 @@ QuickWrapMethodInSameInstance class >> handleCompiledMethod: aMethod [
 { #category : #'as yet unclassified' }
 QuickWrapMethodInSameInstance class >> handledPragma [
 
-	<qwpAddPragmaToAutocompletion>
+	<qwpAddPragmaToAutocompletion> 
 	^ #qwpWrapWith:
 ]
