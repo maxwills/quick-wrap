@@ -7,9 +7,9 @@ Class {
 { #category : #logging }
 MyRepeater class >> repeat: anObject [
 
-	"<quickWrappedBy: #QWWrappersExamples selector: #incrementerWrapper1:wrappedMethod:arguments:>"
-	"<quickWrappedBy: #QWWrappersExamples selector: #incrementerWrapper2:wrappedMethod:arguments:>"
-	"<quickWrappedBy: #QWWrappersExamples selector: #parenthesesWrapper:wrappedMethod:arguments:>"
+	"<qwpWrappedBy: #QWWrappersExamples selector: #incrementerWrapper1:wrappedMethod:arguments:>"
+	"<qwpWrappedBy: #QWWrappersExamples selector: #incrementerWrapper2:wrappedMethod:arguments:>"
+	"<qwpWrappedBy: #QWWrappersExamples selector: #parenthesesWrapper:wrappedMethod:arguments:>"
 	
-	^ anObject
+	^  anObject
 ]

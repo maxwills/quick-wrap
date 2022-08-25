@@ -11,7 +11,7 @@ QWWrappersExamples class >> incrementerWrapper1: receiver wrappedMethod: method 
 
 	| res |
 	"Do stuff"
-	Transcript show: args first asString; cr.
+	Transcript show: 'Doing something before wrapped method ', args first asString; cr.
 	"execute the wrapped method"
 	res := receiver execute: method withArgs: args. 
 	^ res
@@ -26,7 +26,7 @@ QWWrappersExamples class >> incrementerWrapper2: receiver wrappedMethod: method 
 	"execute the wrapped method"
 	res:= receiver execute: method withArgs: args.
 	"Do stuff"
-	Transcript show: args first asString; cr.
+	Transcript show: args first asString, ' Doing something after wrapped method '; cr.
 	^res
    
 ]
@@ -38,6 +38,6 @@ QWWrappersExamples class >> parenthesesWrapper: receiver wrappedMethod: method a
 
 	| res |
 	res := receiver execute: method withArgs: args.
-	self halt.
+
 	^ '(' , res , ')'
 ]
