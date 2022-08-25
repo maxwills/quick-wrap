@@ -1,6 +1,7 @@
 # quick-wrap
 
-A method wrapping system based on pragmas, based on MethodProxies lib (Good stuff).
+A method wrapping system based on pragmas, based on MethodProxies lib.  
+2022-08-25 Update: Usage examples are outdated. To be corrected.
 
 ```Smalltalk
 Metacello new
