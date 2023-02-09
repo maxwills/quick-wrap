@@ -15,5 +15,5 @@ Pragma class >> fullListOfAllNamed: aSymbol [
 	"we check if the pragma is really from an installed method 
 	(others will be cleaned up by the gc when the method is garbadge collected)"
 
-	^ (pragmas select: [ :s | s method isInstalledOrProxified ]) asArray
+	^ (pragmas select: [ :s | [s method isInstalledOrProxified] onErrorDo: [false]]) asArray
 ]
